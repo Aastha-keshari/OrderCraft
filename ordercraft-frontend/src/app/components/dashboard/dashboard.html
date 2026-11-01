@@ -1,0 +1,145 @@
+
+<div class="dashboard-page">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div>
+      <div class="page-label">OVERVIEW</div>
+      <h1>Dashboard</h1>
+      <p>Welcome to your OrderCraft management dashboard.</p>
+    </div>
+
+    <button class="refresh-btn" (click)="loadDashboardData()">
+      ↻ Refresh Data
+    </button>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Customers</span>
+        <div class="stat-icon purple">♙</div>
+      </div>
+      <h2>{{ loading ? '...' : totalCustomers }}</h2>
+      <p>Registered customers</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Orders</span>
+        <div class="stat-icon blue">▤</div>
+      </div>
+      <h2>{{ loading ? '...' : totalOrders }}</h2>
+      <p>Manufacturing orders</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Completed Orders</span>
+        <div class="stat-icon green">✓</div>
+      </div>
+      <h2>{{ loading ? '...' : completedOrders }}</h2>
+      <p>Successfully completed</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Pending Orders</span>
+        <div class="stat-icon orange">◷</div>
+      </div>
+      <h2>{{ loading ? '...' : pendingOrders }}</h2>
+      <p>Awaiting processing</p>
+    </div>
+
+  </div>
+
+  <!-- QUICK ACCESS -->
+  <div class="sections-heading">
+    <div>
+      <h2>Manage Your Business</h2>
+      <p>Select a section to manage your OrderCraft operations.</p>
+    </div>
+  </div>
+
+  <div class="sections-grid">
+
+    <!-- CUSTOMERS -->
+    <div class="section-card" (click)="navigateTo('/customer')">
+      <div class="section-icon purple">♙</div>
+      <div class="section-info">
+        <h3>Customers</h3>
+        <p>Manage customer details and records.</p>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="section-card" (click)="navigateTo('/product')">
+      <div class="section-icon blue">▣</div>
+      <div class="section-info">
+        <h3>Products</h3>
+        <p>Manage products, prices and stock.</p>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+
+    <!-- MANUFACTURING ORDERS -->
+    <div class="section-card" (click)="navigateTo('/order')">
+      <div class="section-icon orange">▤</div>
+      <div class="section-info">
+        <h3>Manufacturing Orders</h3>
+        <p>Track and manage production orders.</p>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+
+    <!-- BOM -->
+    <div class="section-card" (click)="navigateTo('/bom')">
+      <div class="section-icon green">◈</div>
+      <div class="section-info">
+        <h3>Bill of Materials</h3>
+        <p>Manage product components and quantities.</p>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+
+    <!-- PURCHASE ORDERS -->
+    <div class="section-card" (click)="navigateTo('/purchase-order')">
+      <div class="section-icon pink">▧</div>
+      <div class="section-info">
+        <h3>Purchase Orders</h3>
+        <p>Manage supplier orders and purchases.</p>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+
+    <!-- INVOICES -->
+    <div class="section-card" (click)="navigateTo('/invoice')">
+      <div class="section-icon yellow">▤</div>
+      <div class="section-info">
+        <h3>Invoices</h3>
+        <p>Manage customer invoices and billing.</p>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="section-card" (click)="navigateTo('/payment')">
+      <div class="section-icon teal">₹</div>
+      <div class="section-info">
+        <h3>Payments</h3>
+        <p>Track payment transactions and status.</p>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+
+  </div>
+
+</div>

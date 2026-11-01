@@ -1,0 +1,233 @@
+<div class="management-page">
+
+  <!-- HEADER -->
+  <section class="page-header">
+    <div>
+      <p class="page-label">PRODUCT MANAGEMENT</p>
+      <h1>Products</h1>
+      <p class="page-description">
+        Manage your product catalogue, pricing and available stock.
+      </p>
+    </div>
+
+    <button class="primary-btn" (click)="showForm = !showForm">
+      {{ showForm ? '✕ Close Form' : '+ Add Product' }}
+    </button>
+  </section>
+
+
+  <!-- STATISTICS -->
+  <section class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-icon purple">📦</div>
+      <div>
+        <span>Total Products</span>
+        <h2>{{ loading ? '...' : products.length }}</h2>
+        <small>Registered product records</small>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon blue">▤</div>
+      <div>
+        <span>Total Stock</span>
+        <h2>{{ loading ? '...' : totalStock }}</h2>
+        <small>Combined available stock quantity</small>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon green">⌕</div>
+      <div>
+        <span>Search Results</span>
+        <h2>{{ loading ? '...' : filteredProducts.length }}</h2>
+        <small>Products matching your search</small>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ADD PRODUCT FORM -->
+  <section class="form-card" *ngIf="showForm">
+
+    <div class="form-heading">
+      <div>
+        <h2>Add New Product</h2>
+        <p>Enter the product details below.</p>
+      </div>
+
+      <span class="form-symbol">＋</span>
+    </div>
+
+    <div class="form-grid">
+
+      <input
+        type="text"
+        placeholder="Product Name"
+        [(ngModel)]="newProduct.name"
+      />
+
+      <input
+        type="text"
+        placeholder="Product Description"
+        [(ngModel)]="newProduct.description"
+      />
+
+      <input
+        type="number"
+        min="0"
+        placeholder="Price"
+        [(ngModel)]="newProduct.price"
+      />
+
+      <input
+        type="number"
+        min="0"
+        placeholder="Stock Quantity"
+        [(ngModel)]="newProduct.stockQuantity"
+      />
+
+    </div>
+
+    <div class="form-actions">
+
+      <button
+        class="secondary-btn"
+        (click)="showForm = false"
+        [disabled]="saving">
+        Cancel
+      </button>
+
+      <button
+        class="primary-btn"
+        (click)="addProduct()"
+        [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save Product' }}
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- PRODUCT DIRECTORY -->
+  <section class="directory-card">
+
+    <div class="directory-header">
+
+      <div>
+        <h2>Product Directory</h2>
+        <p>All product records stored in your database</p>
+      </div>
+
+      <div class="search-wrapper">
+        <span>⌕</span>
+
+        <input
+          type="text"
+          class="search-box"
+          placeholder="Search by product name..."
+          [(ngModel)]="searchText"
+        />
+
+        <button
+          *ngIf="searchText"
+          class="clear-search"
+          (click)="searchText = ''">
+          ✕
+        </button>
+      </div>
+
+    </div>
+
+
+    <div *ngIf="loading" class="message">
+      Loading products...
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <div
+      *ngIf="!loading && !errorMessage && products.length === 0"
+      class="message">
+      No products have been added yet.
+    </div>
+
+    <div
+      *ngIf="!loading && !errorMessage && products.length > 0 && filteredProducts.length === 0"
+      class="message">
+      No products match "{{ searchText }}".
+    </div>
+
+
+    <div
+      class="table-container"
+      *ngIf="!loading && !errorMessage && filteredProducts.length > 0">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>PRODUCT</th>
+            <th>DESCRIPTION</th>
+            <th>PRICE</th>
+            <th>STOCK QUANTITY</th>
+            <th>PRODUCT ID</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let product of filteredProducts">
+
+            <td>
+              <div class="name-cell">
+                <div class="product-avatar">
+                  📦
+                </div>
+
+                <span class="product-name">
+                  {{ product.name }}
+                </span>
+              </div>
+            </td>
+
+            <td class="description-cell">
+              {{ product.description }}
+            </td>
+
+            <td class="price-cell">
+              ₹{{ product.price }}
+            </td>
+
+            <td>
+              <span class="stock-badge">
+                {{ product.stockQuantity }}
+              </span>
+            </td>
+
+            <td>
+              <span class="id-badge">#{{ product.id }}</span>
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div
+      class="directory-footer"
+      *ngIf="!loading && !errorMessage && products.length > 0">
+      Showing {{ filteredProducts.length }} of {{ products.length }} products
+    </div>
+
+  </section>
+
+</div>

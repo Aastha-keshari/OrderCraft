@@ -1,0 +1,15 @@
+# Unwanted project folders
+.vscode/
+OrderCraft/
+ordercraft-frontend-backup/
+
+# Generated files
+**/node_modules/
+**/dist/
+**/.angular/
+**/target/
+**/*.log
+
+# Secrets
+**/.env
+**/.env.*

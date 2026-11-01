@@ -1,0 +1,270 @@
+<div class="management-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-label">BILLING MANAGEMENT</div>
+      <h1>Invoices</h1>
+      <p>Create and manage customer invoices and payment status.</p>
+    </div>
+
+    <button class="primary-btn" (click)="showForm = !showForm">
+      <span>{{ showForm ? '−' : '+' }}</span>
+      {{ showForm ? 'Close Form' : 'Add Invoice' }}
+    </button>
+  </div>
+
+  <!-- STATISTICS -->
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Invoices</span>
+        <div class="stat-icon purple">▤</div>
+      </div>
+      <h2>{{ totalInvoices }}</h2>
+      <p>All registered invoices</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Paid Invoices</span>
+        <div class="stat-icon green">✓</div>
+      </div>
+      <h2>{{ paidInvoices }}</h2>
+      <p>Invoices marked paid</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Pending Invoices</span>
+        <div class="stat-icon orange">◷</div>
+      </div>
+      <h2>{{ pendingInvoices }}</h2>
+      <p>Awaiting payment</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Invoice Amount</span>
+        <div class="stat-icon blue">₹</div>
+      </div>
+      <h2>₹{{ totalInvoiceAmount | number:'1.0-2' }}</h2>
+      <p>Sum of registered invoice amounts</p>
+    </div>
+
+  </div>
+
+  <!-- ADD INVOICE FORM -->
+  <div class="form-card" *ngIf="showForm">
+
+    <div class="form-heading">
+      <div>
+        <h2>Create Invoice</h2>
+        <p>Enter customer, order and billing details.</p>
+      </div>
+    </div>
+
+    <form (ngSubmit)="addInvoice()">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Invoice Number</label>
+          <input
+            type="text"
+            name="invoiceNumber"
+            placeholder="e.g. INV-001"
+            [(ngModel)]="newInvoice.invoiceNumber"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Customer ID</label>
+          <input
+            type="number"
+            name="customerId"
+            placeholder="Enter customer ID"
+            [(ngModel)]="newInvoice.customerId"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Order ID</label>
+          <input
+            type="number"
+            name="orderId"
+            placeholder="Enter order ID"
+            [(ngModel)]="newInvoice.orderId"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Amount (₹)</label>
+          <input
+            type="number"
+            name="amount"
+            placeholder="Enter invoice amount"
+            [(ngModel)]="newInvoice.amount"
+            min="0"
+            step="0.01"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Invoice Date</label>
+          <input
+            type="date"
+            name="invoiceDate"
+            [(ngModel)]="newInvoice.invoiceDate"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Invoice Status</label>
+          <select
+            name="status"
+            [(ngModel)]="newInvoice.status"
+            required
+          >
+            <option value="Pending">Pending</option>
+            <option value="Issued">Issued</option>
+            <option value="Paid">Paid</option>
+            <option value="Overdue">Overdue</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="showForm = false">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="save-btn"
+          [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save Invoice' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- INVOICE DIRECTORY -->
+  <div class="directory-card">
+
+    <div class="directory-header">
+      <div>
+        <h2>Invoice Directory</h2>
+        <p>All registered customer invoices</p>
+      </div>
+
+      <div class="search-box">
+        <span>⌕</span>
+
+        <input
+          type="text"
+          placeholder="Search invoice, customer or status..."
+          [(ngModel)]="searchText"
+        />
+
+        <button
+          *ngIf="searchText"
+          type="button"
+          class="clear-search"
+          (click)="searchText = ''">
+          ×
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="message" *ngIf="loading">
+      Loading invoices...
+    </div>
+
+    <!-- ERROR -->
+    <div class="message error-message" *ngIf="!loading && errorMessage">
+      {{ errorMessage }}
+      <button class="retry-btn" (click)="getInvoices()">Retry</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container" *ngIf="!loading && !errorMessage">
+
+      <table>
+        <thead>
+          <tr>
+            <th>INVOICE NUMBER</th>
+            <th>CUSTOMER ID</th>
+            <th>ORDER ID</th>
+            <th>AMOUNT</th>
+            <th>INVOICE DATE</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let invoice of filteredInvoices">
+
+            <td class="invoice-number">
+              {{ invoice.invoiceNumber }}
+            </td>
+
+            <td>#{{ invoice.customerId }}</td>
+
+            <td>#{{ invoice.orderId }}</td>
+
+            <td>₹{{ invoice.amount | number:'1.0-2' }}</td>
+
+            <td>{{ invoice.invoiceDate }}</td>
+
+            <td>
+              <span
+                class="status"
+                [ngClass]="{
+                  'pending': invoice.status?.toLowerCase() === 'pending',
+                  'issued': invoice.status?.toLowerCase() === 'issued',
+                  'paid': invoice.status?.toLowerCase() === 'paid',
+                  'overdue': invoice.status?.toLowerCase() === 'overdue',
+                  'cancelled': invoice.status?.toLowerCase() === 'cancelled'
+                }">
+                {{ invoice.status }}
+              </span>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="filteredInvoices.length === 0">
+            <td colspan="6" class="empty-message">
+              {{ searchText ? 'No matching invoices found.' : 'No invoices found.' }}
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="directory-footer" *ngIf="!loading && !errorMessage">
+      Showing {{ filteredInvoices.length }} of {{ totalInvoices }} invoices
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,222 @@
+
+<div class="management-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-label">BILL OF MATERIALS</div>
+      <h1>Bill of Materials</h1>
+      <p>Manage product components, quantities and material requirements.</p>
+    </div>
+
+    <button class="primary-btn" (click)="showForm = !showForm">
+      <span>{{ showForm ? '−' : '+' }}</span>
+      {{ showForm ? 'Close Form' : 'Add BOM' }}
+    </button>
+  </div>
+
+  <!-- STATISTICS -->
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total BOM Records</span>
+        <div class="stat-icon purple">▤</div>
+      </div>
+      <h2>{{ totalBoms }}</h2>
+      <p>All registered BOM entries</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Unique Components</span>
+        <div class="stat-icon blue">◈</div>
+      </div>
+      <h2>{{ uniqueComponents }}</h2>
+      <p>Distinct component names</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Required Quantity</span>
+        <div class="stat-icon green">▥</div>
+      </div>
+      <h2>{{ totalQuantity | number:'1.0-2' }}</h2>
+      <p>Combined component quantity</p>
+    </div>
+
+  </div>
+
+  <!-- ADD BOM FORM -->
+  <div class="form-card" *ngIf="showForm">
+
+    <div class="form-heading">
+      <div>
+        <h2>Add New BOM</h2>
+        <p>Enter product and component details.</p>
+      </div>
+    </div>
+
+    <form (ngSubmit)="addBom()">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Product ID</label>
+          <input
+            type="number"
+            name="productId"
+            placeholder="Enter product ID"
+            [(ngModel)]="newBom.productId"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Component Name</label>
+          <input
+            type="text"
+            name="componentName"
+            placeholder="Enter component name"
+            [(ngModel)]="newBom.componentName"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            placeholder="Enter quantity"
+            [(ngModel)]="newBom.quantity"
+            min="0.01"
+            step="0.01"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Unit</label>
+          <input
+            type="text"
+            name="unit"
+            placeholder="e.g. kg, pieces, litres"
+            [(ngModel)]="newBom.unit"
+            required
+          />
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="showForm = false">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="save-btn"
+          [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save BOM' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- BOM DIRECTORY -->
+  <div class="directory-card">
+
+    <div class="directory-header">
+      <div>
+        <h2>BOM Directory</h2>
+        <p>All registered bill of materials records</p>
+      </div>
+
+      <div class="search-box">
+        <span>⌕</span>
+
+        <input
+          type="text"
+          placeholder="Search product or component..."
+          [(ngModel)]="searchText"
+        />
+
+        <button
+          *ngIf="searchText"
+          type="button"
+          class="clear-search"
+          (click)="searchText = ''">
+          ×
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="message" *ngIf="loading">
+      Loading BOM records...
+    </div>
+
+    <!-- ERROR -->
+    <div class="message error-message" *ngIf="!loading && errorMessage">
+      {{ errorMessage }}
+      <button class="retry-btn" (click)="getBoms()">Retry</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container" *ngIf="!loading && !errorMessage">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>PRODUCT ID</th>
+            <th>COMPONENT NAME</th>
+            <th>QUANTITY</th>
+            <th>UNIT</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let bom of filteredBoms">
+
+            <td class="product-id">#{{ bom.productId }}</td>
+
+            <td class="component-name">
+              {{ bom.componentName }}
+            </td>
+
+            <td>{{ bom.quantity }}</td>
+
+            <td>
+              <span class="unit-badge">{{ bom.unit }}</span>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="filteredBoms.length === 0">
+            <td colspan="4" class="empty-message">
+              {{ searchText ? 'No matching BOM records found.' : 'No BOM records found.' }}
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="directory-footer" *ngIf="!loading && !errorMessage">
+      Showing {{ filteredBoms.length }} of {{ totalBoms }} BOM records
+    </div>
+
+  </div>
+
+</div>

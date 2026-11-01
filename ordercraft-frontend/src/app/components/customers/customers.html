@@ -1,0 +1,178 @@
+<div class="management-page">
+
+  <section class="page-header">
+    <div>
+      <p class="page-label">CUSTOMER MANAGEMENT</p>
+      <h1>Customers</h1>
+      <p class="page-description">
+        Manage your customers and company information.
+      </p>
+    </div>
+
+    <button class="primary-btn" (click)="showForm = !showForm">
+      {{ showForm ? 'Close Form' : '+ Add Customer' }}
+    </button>
+  </section>
+
+  <section class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-icon purple">👥</div>
+      <div>
+        <span>Total Customers</span>
+        <h2>{{ loading ? '...' : customers.length }}</h2>
+        <small>Registered customer records</small>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon blue">🏢</div>
+      <div>
+        <span>Companies</span>
+        <h2>{{ loading ? '...' : companyCount }}</h2>
+        <small>Distinct company names</small>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon green">✓</div>
+      <div>
+        <span>Search Results</span>
+        <h2>{{ loading ? '...' : filteredCustomers.length }}</h2>
+        <small>Matching customers</small>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="form-card" *ngIf="showForm">
+
+    <h2>Add New Customer</h2>
+
+    <div class="form-grid">
+      <input
+        type="text"
+        placeholder="Customer Name"
+        [(ngModel)]="newCustomer.name"
+      />
+
+      <input
+        type="email"
+        placeholder="Email Address"
+        [(ngModel)]="newCustomer.email"
+      />
+
+      <input
+        type="text"
+        placeholder="Phone Number"
+        [(ngModel)]="newCustomer.phone"
+      />
+
+      <input
+        type="text"
+        placeholder="Company Name"
+        [(ngModel)]="newCustomer.company"
+      />
+    </div>
+
+    <div class="form-actions">
+      <button
+        class="secondary-btn"
+        (click)="showForm = false"
+        [disabled]="saving">
+        Cancel
+      </button>
+
+      <button
+        class="primary-btn"
+        (click)="addCustomer()"
+        [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save Customer' }}
+      </button>
+    </div>
+
+  </section>
+
+  <section class="directory-card">
+
+    <div class="directory-header">
+      <div>
+        <h2>Customer Directory</h2>
+        <p>All registered customers</p>
+      </div>
+
+      <input
+        type="text"
+        class="search-box"
+        placeholder="Search customer by name..."
+        [(ngModel)]="searchText"
+      />
+    </div>
+
+    <div *ngIf="loading" class="message">
+      Loading customers...
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <div
+      *ngIf="!loading && !errorMessage && customers.length === 0"
+      class="message">
+      No customers found in the database.
+    </div>
+
+    <div
+      *ngIf="!loading && !errorMessage &&
+      customers.length > 0 && filteredCustomers.length === 0"
+      class="message">
+      No matching customers found.
+    </div>
+
+    <div
+      class="table-container"
+      *ngIf="!loading && !errorMessage && filteredCustomers.length > 0">
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>CUSTOMER NAME</th>
+            <th>COMPANY</th>
+            <th>EMAIL</th>
+            <th>PHONE</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let customer of filteredCustomers">
+
+            <td>{{ customer.id }}</td>
+
+            <td class="customer-name">
+              {{ customer.name }}
+            </td>
+
+            <td>{{ customer.company }}</td>
+
+            <td>{{ customer.email }}</td>
+
+            <td>{{ customer.phone }}</td>
+
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <div
+      class="directory-footer"
+      *ngIf="!loading && !errorMessage && customers.length > 0">
+      Showing {{ filteredCustomers.length }} of
+      {{ customers.length }} customers
+    </div>
+
+  </section>
+
+</div>

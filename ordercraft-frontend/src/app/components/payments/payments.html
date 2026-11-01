@@ -1,0 +1,257 @@
+<div class="management-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-label">PAYMENT MANAGEMENT</div>
+      <h1>Payments</h1>
+      <p>Track invoice payments, payment methods and transaction status.</p>
+    </div>
+
+    <button class="primary-btn" (click)="showForm = !showForm">
+      <span>{{ showForm ? '−' : '+' }}</span>
+      {{ showForm ? 'Close Form' : 'Add Payment' }}
+    </button>
+  </div>
+
+  <!-- STATISTICS -->
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Payments</span>
+        <div class="stat-icon purple">▤</div>
+      </div>
+      <h2>{{ totalPayments }}</h2>
+      <p>All registered transactions</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Completed Payments</span>
+        <div class="stat-icon green">✓</div>
+      </div>
+      <h2>{{ completedPayments }}</h2>
+      <p>Successfully completed</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Pending Payments</span>
+        <div class="stat-icon orange">◷</div>
+      </div>
+      <h2>{{ pendingPayments }}</h2>
+      <p>Awaiting completion</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Payment Amount</span>
+        <div class="stat-icon blue">₹</div>
+      </div>
+      <h2>₹{{ totalPaymentAmount | number:'1.0-2' }}</h2>
+      <p>Sum of registered payment amounts</p>
+    </div>
+
+  </div>
+
+  <!-- ADD PAYMENT FORM -->
+  <div class="form-card" *ngIf="showForm">
+
+    <div class="form-heading">
+      <div>
+        <h2>Record Payment</h2>
+        <p>Enter invoice and transaction details.</p>
+      </div>
+    </div>
+
+    <form (ngSubmit)="addPayment()">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Invoice ID</label>
+          <input
+            type="number"
+            name="invoiceId"
+            placeholder="Enter invoice ID"
+            [(ngModel)]="newPayment.invoiceId"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Payment Amount (₹)</label>
+          <input
+            type="number"
+            name="amount"
+            placeholder="Enter payment amount"
+            [(ngModel)]="newPayment.amount"
+            min="0.01"
+            step="0.01"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Payment Date</label>
+          <input
+            type="date"
+            name="paymentDate"
+            [(ngModel)]="newPayment.paymentDate"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Payment Method</label>
+          <select
+            name="paymentMethod"
+            [(ngModel)]="newPayment.paymentMethod"
+            required
+          >
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="UPI">UPI</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Payment Status</label>
+          <select
+            name="status"
+            [(ngModel)]="newPayment.status"
+            required
+          >
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+            <option value="Failed">Failed</option>
+            <option value="Refunded">Refunded</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="showForm = false">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="save-btn"
+          [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save Payment' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- PAYMENT DIRECTORY -->
+  <div class="directory-card">
+
+    <div class="directory-header">
+      <div>
+        <h2>Payment Directory</h2>
+        <p>All registered payment transactions</p>
+      </div>
+
+      <div class="search-box">
+        <span>⌕</span>
+
+        <input
+          type="text"
+          placeholder="Search invoice, method or status..."
+          [(ngModel)]="searchText"
+        />
+
+        <button
+          *ngIf="searchText"
+          type="button"
+          class="clear-search"
+          (click)="searchText = ''">
+          ×
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="message" *ngIf="loading">
+      Loading payments...
+    </div>
+
+    <!-- ERROR -->
+    <div class="message error-message" *ngIf="!loading && errorMessage">
+      {{ errorMessage }}
+      <button class="retry-btn" (click)="getPayments()">Retry</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container" *ngIf="!loading && !errorMessage">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>INVOICE ID</th>
+            <th>AMOUNT</th>
+            <th>PAYMENT DATE</th>
+            <th>PAYMENT METHOD</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let payment of filteredPayments">
+
+            <td class="invoice-id">#{{ payment.invoiceId }}</td>
+
+            <td>₹{{ payment.amount | number:'1.0-2' }}</td>
+
+            <td>{{ payment.paymentDate }}</td>
+
+            <td>{{ payment.paymentMethod }}</td>
+
+            <td>
+              <span
+                class="status"
+                [ngClass]="{
+                  'pending': payment.status?.toLowerCase() === 'pending',
+                  'completed': payment.status?.toLowerCase() === 'completed',
+                  'failed': payment.status?.toLowerCase() === 'failed',
+                  'refunded': payment.status?.toLowerCase() === 'refunded'
+                }">
+                {{ payment.status }}
+              </span>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="filteredPayments.length === 0">
+            <td colspan="5" class="empty-message">
+              {{ searchText ? 'No matching payments found.' : 'No payments found.' }}
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="directory-footer" *ngIf="!loading && !errorMessage">
+      Showing {{ filteredPayments.length }} of {{ totalPayments }} payments
+    </div>
+
+  </div>
+
+</div>

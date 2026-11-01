@@ -1,0 +1,244 @@
+<div class="management-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-label">MANUFACTURING MANAGEMENT</div>
+      <h1>Manufacturing Orders</h1>
+      <p>Create and manage manufacturing orders and production status.</p>
+    </div>
+
+    <button class="primary-btn" (click)="showForm = !showForm">
+      <span>{{ showForm ? '−' : '+' }}</span>
+      {{ showForm ? 'Close Form' : 'Add Order' }}
+    </button>
+  </div>
+
+  <!-- STATISTICS -->
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Orders</span>
+        <div class="stat-icon purple">▤</div>
+      </div>
+      <h2>{{ totalOrders }}</h2>
+      <p>All manufacturing orders</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Completed Orders</span>
+        <div class="stat-icon green">✓</div>
+      </div>
+      <h2>{{ completedOrders }}</h2>
+      <p>Orders marked completed</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Pending Orders</span>
+        <div class="stat-icon orange">◷</div>
+      </div>
+      <h2>{{ pendingOrders }}</h2>
+      <p>Orders awaiting completion</p>
+    </div>
+
+  </div>
+
+  <!-- ADD ORDER FORM -->
+  <div class="form-card" *ngIf="showForm">
+
+    <div class="form-heading">
+      <div>
+        <h2>Create Manufacturing Order</h2>
+        <p>Enter the details to register a new production order.</p>
+      </div>
+    </div>
+
+    <form (ngSubmit)="addOrder()">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Order Number</label>
+          <input
+            type="text"
+            name="orderNumber"
+            placeholder="e.g. MO-001"
+            [(ngModel)]="newOrder.orderNumber"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Customer ID</label>
+          <input
+            type="number"
+            name="customerId"
+            placeholder="Enter customer ID"
+            [(ngModel)]="newOrder.customerId"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Product ID</label>
+          <input
+            type="number"
+            name="productId"
+            placeholder="Enter product ID"
+            [(ngModel)]="newOrder.productId"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            placeholder="Enter quantity"
+            [(ngModel)]="newOrder.quantity"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Order Status</label>
+          <select
+            name="status"
+            [(ngModel)]="newOrder.status"
+            required
+          >
+            <option value="Pending">Pending</option>
+            <option value="In Production">In Production</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="showForm = false">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="save-btn"
+          [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save Order' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- ORDER DIRECTORY -->
+  <div class="directory-card">
+
+    <div class="directory-header">
+      <div>
+        <h2>Manufacturing Orders</h2>
+        <p>All registered production orders</p>
+      </div>
+
+      <div class="search-box">
+        <span>⌕</span>
+        <input
+          type="text"
+          placeholder="Search order number..."
+          [(ngModel)]="searchText"
+        />
+
+        <button
+          *ngIf="searchText"
+          class="clear-search"
+          type="button"
+          (click)="searchText = ''">
+          ×
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="message" *ngIf="loading">
+      Loading manufacturing orders...
+    </div>
+
+    <!-- ERROR -->
+    <div class="message error-message" *ngIf="!loading && errorMessage">
+      {{ errorMessage }}
+      <button class="retry-btn" (click)="getOrders()">Retry</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container" *ngIf="!loading && !errorMessage">
+
+      <table>
+        <thead>
+          <tr>
+            <th>ORDER NUMBER</th>
+            <th>CUSTOMER ID</th>
+            <th>PRODUCT ID</th>
+            <th>QUANTITY</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let order of filteredOrders">
+
+            <td class="order-number">
+              {{ order.orderNumber }}
+            </td>
+
+            <td>#{{ order.customerId }}</td>
+
+            <td>#{{ order.productId }}</td>
+
+            <td>{{ order.quantity }}</td>
+
+            <td>
+              <span
+                class="status"
+                [ngClass]="{
+                  'pending': order.status?.toLowerCase() === 'pending',
+                  'production': order.status?.toLowerCase() === 'in production',
+                  'completed': order.status?.toLowerCase() === 'completed',
+                  'cancelled': order.status?.toLowerCase() === 'cancelled'
+                }">
+                {{ order.status }}
+              </span>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="filteredOrders.length === 0">
+            <td colspan="5" class="empty-message">
+              {{ searchText ? 'No matching orders found.' : 'No manufacturing orders found.' }}
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="directory-footer" *ngIf="!loading && !errorMessage">
+      Showing {{ filteredOrders.length }} of {{ totalOrders }} orders
+    </div>
+
+  </div>
+
+</div>

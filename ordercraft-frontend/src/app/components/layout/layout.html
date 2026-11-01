@@ -1,0 +1,134 @@
+
+<div class="app-layout">
+
+  <aside class="sidebar" [class.open]="menuOpen">
+
+    <div class="logo">
+      <div class="logo-icon">O</div>
+      <div class="logo-text">
+        <strong>OrderCraft</strong>
+        <small>MANUFACTURING OMS</small>
+      </div>
+    </div>
+
+    <div class="menu-title">WORKSPACE</div>
+
+    <nav class="navigation">
+
+      <a routerLink="/dashboard" routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: true }"
+         class="nav-item" (click)="closeMenu()">
+        <span class="nav-icon">▦</span>
+        <span>Dashboard</span>
+      </a>
+
+      <div class="menu-title">MANAGEMENT</div>
+
+      <a routerLink="/customer" routerLinkActive="active"
+         class="nav-item" (click)="closeMenu()">
+        <span class="nav-icon">♙</span>
+        <span>Customers</span>
+      </a>
+
+      <a routerLink="/product" routerLinkActive="active"
+         class="nav-item" (click)="closeMenu()">
+        <span class="nav-icon">▣</span>
+        <span>Products</span>
+      </a>
+
+      <a routerLink="/order" routerLinkActive="active"
+         class="nav-item" (click)="closeMenu()">
+        <span class="nav-icon">⚙</span>
+        <span>Manufacturing Orders</span>
+      </a>
+
+      <a routerLink="/bom" routerLinkActive="active"
+         class="nav-item" (click)="closeMenu()">
+        <span class="nav-icon">◈</span>
+        <span>Bill of Materials</span>
+      </a>
+
+      <a routerLink="/purchase-order" routerLinkActive="active"
+         class="nav-item" (click)="closeMenu()">
+        <span class="nav-icon">⇄</span>
+        <span>Purchase Orders</span>
+      </a>
+
+      <a routerLink="/invoice" routerLinkActive="active"
+         class="nav-item" (click)="closeMenu()">
+        <span class="nav-icon">▤</span>
+        <span>Invoices</span>
+      </a>
+
+      <a routerLink="/payment" routerLinkActive="active"
+         class="nav-item" (click)="closeMenu()">
+        <span class="nav-icon">₹</span>
+        <span>Payments</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <div class="help-icon">?</div>
+        <div>
+          <strong>Need help?</strong>
+          <small>Contact support</small>
+        </div>
+      </div>
+      <div class="sidebar-footer">© 2026 OrderCraft</div>
+    </div>
+
+  </aside>
+
+  <div class="mobile-overlay" [class.visible]="menuOpen"
+       (click)="closeMenu()"></div>
+
+  <main class="main-content">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+        <button class="menu-toggle" (click)="menuOpen = !menuOpen">
+          ☰
+        </button>
+
+        <div class="page-heading">
+          <h2>OrderCraft</h2>
+          <p>Manufacturing Management System</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+
+        <div class="top-search">
+          <span>⌕</span>
+          <input type="text" placeholder="Search anything..." />
+          <kbd>Ctrl K</kbd>
+        </div>
+
+        <button class="notification" aria-label="Notifications">
+          ♧
+          <span></span>
+        </button>
+
+        <div class="profile">
+          <div class="avatar">A</div>
+          <div class="profile-info">
+            <strong>Admin User</strong>
+            <small>Administrator</small>
+          </div>
+          <span class="profile-arrow">⌄</span>
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="content">
+      <router-outlet></router-outlet>
+    </section>
+
+  </main>
+
+</div>
